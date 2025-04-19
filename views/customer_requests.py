@@ -1,25 +1,27 @@
 CUSTOMERS = [
-  {
+    {
         "id": 1,
         "name": "Randy Marsh"
     },
-  {
+    {
         "id": 2,
         "name": "Stan Marsh"
     }
 ]
 
+
 def get_all_customers():
-  """Return all customers."""
-  return CUSTOMERS
+    """Return all customers."""
+    return CUSTOMERS
+
 
 def get_single_customer(id):
-  """Return a single customer."""
-  requested_customer = None
-  for customer in CUSTOMERS:
-    if customer["id"] == id:
-      requested_customer = customer
-  return requested_customer
+    """Return a single customer."""
+    requested_customer = None
+    for customer in CUSTOMERS:
+        if customer["id"] == id:
+            requested_customer = customer
+    return requested_customer
 
 
 def create_customer(customer):
@@ -38,12 +40,13 @@ def create_customer(customer):
     # Return the dictionary with `id` property added
     return customer
 
+
 def delete_customer(id):
-# Initial -1 value for customer index, in case one isn't found
+    # Initial -1 value for customer index, in case one isn't found
     customer_index = -1
 
-  # Iterate the customerS list, but use enumerate() so that you
-  # can access the index value of each item
+    # Iterate the CUSTOMERS list, but use enumerate() so that you
+    # can access the index value of each item
     for index, customer in enumerate(CUSTOMERS):
         if customer["id"] == id:
             # Found the customer. Store the current index.
@@ -53,8 +56,9 @@ def delete_customer(id):
     if customer_index >= 0:
         CUSTOMERS.pop(customer_index)
 
+
 def update_customer(id, new_customer):
-    # Iterate the customerS list, but use enumerate() so that
+    # Iterate the CUSTOMERS list, but use enumerate() so that
     # you can access the index value of each item.
     for index, customer in enumerate(CUSTOMERS):
         if customer["id"] == id:

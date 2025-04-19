@@ -11,23 +11,26 @@ LOCATIONS = [
     }
 ]
 
+
 def get_all_locations():
     """Return all locations."""
     return LOCATIONS
-  
+
+
 def get_single_location(id):
     """Return a single location."""
     requested_location = None
     for location in LOCATIONS:
         if location["id"] == id:
-          requested_location = location 
+            requested_location = location
     return requested_location
+
 
 def delete_location(id):
   # Initial -1 value for location index, in case one isn't found
     location_index = -1
 
-  # Iterate the locationS list, but use enumerate() so that you
+  # Iterate the LOCATIONS list, but use enumerate() so that you
   # can access the index value of each item
     for index, location in enumerate(LOCATIONS):
         if location["id"] == id:
@@ -38,8 +41,9 @@ def delete_location(id):
     if location_index >= 0:
         LOCATIONS.pop(location_index)
 
+
 def update_location(id, new_location):
-    # Iterate the locationS list, but use enumerate() so that
+    # Iterate the LOCATIONS list, but use enumerate() so that
     # you can access the index value of each item.
     for index, location in enumerate(LOCATIONS):
         if location["id"] == id:
