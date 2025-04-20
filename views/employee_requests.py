@@ -1,3 +1,5 @@
+from employee_utils import is_valid_employee
+
 EMPLOYEES = [
     {
         "id": 1,
@@ -60,6 +62,8 @@ def delete_employee(id):
 def update_employee(id, new_employee):
     # Iterate the employeeS list, but use enumerate() so that
     # you can access the index value of each item.
+    if not is_valid_employee(new_employee):
+        raise ValueError("Invalid employee data")
     for index, employee in enumerate(EMPLOYEES):
         if employee["id"] == id:
             # Found the employee. Update the value.
