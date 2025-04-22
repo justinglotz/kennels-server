@@ -1,5 +1,5 @@
 import unittest
-from employee_requests import EMPLOYEES, update_employee
+from employee_requests import EMPLOYEES, update_employee, delete_employee
 from employee_utils import is_valid_employee
 
 
@@ -39,3 +39,17 @@ class TestUpdateEmployee(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestDeleteEmployee(unittest.TestCase):
+
+    def setUp(self):
+        EMPLOYEES.clear()
+        EMPLOYEES.extend([
+            {"id": 1, "name": "Alice"},
+            {"id": 2, "name": "Bob"},
+        ])
+
+    def test_delete_employee(self):
+        delete_employee(1)
+        self.assertEqual(EMPLOYEES, [{"id": 2, "name": "Bob"}])
