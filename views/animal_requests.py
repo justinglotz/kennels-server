@@ -8,7 +8,7 @@ ANIMALS = [
         "name": "Snickers",
         "species": "Dog",
         "locationId": 1,
-        "customerId": 4,
+        "animalId": 4,
         "status": "Admitted"
     },
     {
@@ -16,21 +16,21 @@ ANIMALS = [
         "name": "Roman",
         "species": "Dog",
         "locationId": 1,
-        "customerId": 2,
+        "animalId": 2,
         "status": "Admitted"
     },
     {
         "id": 3,
         "species": "Cat",
         "locationId": 2,
-        "customerId": 1,
+        "animalId": 1,
         "status": "Admitted"
     }
 ]
 
 
 def get_all_animals():
-    # Open a connection to the database
+    # Open a connection to the rowbase
     with sqlite3.connect("./kennel.sqlite3") as conn:
 
         # Just use these. It's a Black Box.
@@ -45,26 +45,26 @@ def get_all_animals():
             a.breed,
             a.status,
             a.location_id,
-            a.customer_id
+            a.animal_id
         FROM animal a
         """)
 
         # Initialize an empty list to hold all animal representations
         animals = []
 
-        # Convert rows of data into a Python list
-        dataset = db_cursor.fetchall()
+        # Convert rows of row into a Python list
+        rowset = db_cursor.fetchall()
 
-        # Iterate list of data returned from database
-        for row in dataset:
+        # Iterate list of row returned from rowbase
+        for row in rowset:
 
             # Create an animal instance from the current row.
-            # Note that the database fields are specified in
+            # Note that the rowbase fields are specified in
             # exact order of the parameters defined in the
             # Animal class above.
             animal = Animal(row['id'], row['name'], row['breed'],
                             row['status'], row['location_id'],
-                            row['customer_id'])
+                            row['animal_id'])
 
             # see the notes below for an explanation on this line of code.
             animals.append(animal.__dict__)
@@ -88,18 +88,18 @@ def get_single_animal(id):
             a.breed,
             a.status,
             a.location_id,
-            a.customer_id
+            a.animal_id
         FROM animal a
         WHERE a.id = ?
         """, (id, ))
 
         # Load the single result into memory
-        data = db_cursor.fetchone()
+        row = db_cursor.fetchone()
 
         # Create an animal instance from the current row
-        animal = Animal(data['id'], data['name'], data['breed'],
-                        data['status'], data['location_id'],
-                        data['customer_id'])
+        animal = Animal(row['id'], row['name'], row['breed'],
+                        row['status'], row['location_id'],
+                        row['animal_id'])
 
         return animal.__dict__
 
@@ -156,3 +156,65 @@ def update_animal(id, new_animal):
             # Found the animal. Update the value.
             ANIMALS[index] = new_animal
             break
+
+
+def get_animal_by_location(location_id):
+
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.status,
+            c.breed,
+            c.customer_id,
+            c.location_id
+        from Animal c
+        WHERE c.location_id = ?
+        """, (location_id, ))
+
+        animals = []
+        rowset = db_cursor.fetchall()
+
+        for row in rowset:
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
+
+    return animals
+
+
+def get_animal_by_status(status):
+
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+
+        # Write the SQL query to get the information you want
+        db_cursor.execute("""
+        select
+            c.id,
+            c.name,
+            c.status,
+            c.breed,
+            c.customer_id,
+            c.location_id
+        from Animal c
+        WHERE c.status = ?
+        """, (status, ))
+
+        animals = []
+        rowset = db_cursor.fetchall()
+
+        for row in rowset:
+            animal = Animal(row['id'], row['name'], row['breed'],
+                            row['status'], row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
+
+    return animals
