@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Location
+from models import Location, Employee, Animal
 
 LOCATIONS = [
     {
@@ -27,10 +27,10 @@ def get_all_locations():
         # Write the SQL query to get the information you want
         db_cursor.execute("""
         SELECT
-            a.id,
-            a.name,
-            a.address,
-        FROM location a
+           l.id,
+           l.name,
+           l.address
+        FROM location l
         """)
 
         # Initialize an empty list to hold all location representations
@@ -59,24 +59,52 @@ def get_single_location(id):
     with sqlite3.connect("./kennel.sqlite3") as conn:
         conn.row_factory = sqlite3.Row
         db_cursor = conn.cursor()
-
-        # Use a ? parameter to inject a variable's value
-        # into the SQL statement.
         db_cursor.execute("""
-        SELECT
-            a.id,
-            a.name,
-            a.address,
-        FROM location a
-        WHERE a.id = ?
-        """, (id, ))
+                    SELECT
+                        l.id,
+                        l.name,
+                        l.address
+                    FROM location l
+                    WHERE l.id = ?
+                     """, (id, ))
+        location_data = db_cursor.fetchone()
 
-        # Load the single result into memory
-        data = db_cursor.fetchone()
+        location = Location(
+            location_data['id'], location_data['name'], location_data['address'])
 
-        # Create an location instance from the current row
-        location = Location(data['id'], data['name'], data['address'],
-                            )
+        db_cursor.execute("""
+                    SELECT
+                        e.id,
+                        e.name,
+                        e.address,
+                        e.location_id
+                    FROM employee e
+                    WHERE e.location_id = ?
+                     """, (id, ))
+        employee_data = db_cursor.fetchall()
+
+        for row in employee_data:
+            employee = Employee(row['id'], row['name'],
+                                row['address'], row['location_id'])
+            location.employees.append(employee.__dict__)
+
+        db_cursor.execute("""
+                    SELECT
+                        a.id,
+                        a.name,
+                        a.status,
+                        a.breed,
+                        a.customer_id,
+                        a.location_id
+                    FROM animal a 
+                    WHERE a.location_id = ?
+                     """, (id, ))
+        animal_data = db_cursor.fetchall()
+
+        for row in animal_data:
+            animal = Animal(row['id'], row['name'],
+                            row['status'], row['breed'], row['customer_id'], row['location_id'])
+            location.animals.append(animal.__dict__)
 
         return location.__dict__
 

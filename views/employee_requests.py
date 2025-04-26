@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from models import Employee
+from models import Employee, Location
 from .employee_utils import is_valid_employee
 
 EMPLOYEES = [
@@ -29,8 +29,12 @@ def get_all_employees():
             a.id,
             a.name,
             a.address,
-            a.location_id
-        FROM employee a
+            a.location_id,
+            l.name location_name,
+            l.address location_address
+        FROM Employee a
+        JOIN Location l
+		    ON l.id = a.location_id 
         """)
 
         # Initialize an empty list to hold all employee representations
@@ -50,7 +54,11 @@ def get_all_employees():
                                 row['location_id']
                                 )
 
+            location = Location(row['location_id'], row['location_name'], row['location_address']
+                                )
+
             # see the notes below for an explanation on this line of code.
+            employee.location = location.to_dict()
             employees.append(employee.__dict__)
 
     return employees
@@ -102,19 +110,13 @@ def create_employee(employee):
 
 
 def delete_employee(id):
-    # Initial -1 value for employee index, in case one isn't found
-    employee_index = -1
+    with sqlite3.connect("./kennel.sqlite3") as conn:
+        db_cursor = conn.cursor()
 
-    # Iterate the employeeS list, but use enumerate() so that you
-    # can access the index value of each item
-    for index, employee in enumerate(EMPLOYEES):
-        if employee["id"] == id:
-            # Found the employee. Store the current index.
-            employee_index = index
-
-    # If the employee was found, use pop(int) to remove it from list
-    if employee_index >= 0:
-        EMPLOYEES.pop(employee_index)
+        db_cursor.execute("""
+            DELETE FROM employee
+            WHERE id = ?
+            """, (id, ))
 
 
 def update_employee(id, new_employee):
